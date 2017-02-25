@@ -15,42 +15,33 @@ $(document).ready(function(){
         // Looping through the array of sports
         for (var i = 0; i < sports.length; i++) {
           // Then generating buttons for each sport in the array
-          var a = $("<button>");
+          var buttonBuild = $("<button>");
           // Adding a class of sport to our button
-          a.addClass("sport");
+          buttonBuild.addClass("sport");
           // Adding a data-attribute
-          a.attr("data-name", sports[i]);
+          buttonBuild.attr("data-name", sports[i]);
           // Providing the initial button text
-          a.text(sports[i]);
+          buttonBuild.text(sports[i]);
           // Adding the button to the buttons-view div
-          $("#sportButtons").append(a);
+          $("#sportButtons").append(buttonBuild);
         }
   }
 
-    buildButtons ();
+ // buildButtons ();
 
-    function userInput () {
-      var input = $("#sport-input").val();
-      var imageButton = $("<button>");
-      imageButton.on("click", displayImages);
-      imageButton.attr("data-name", input);
-      imageButton.addClass("imageButton");
-      imageButton.text(input);
-      $("#sportButtons").append(imageButton);
-    }
-
-    $("#addSport").on("click", function() {
-      userInput();
-    })
-
-
+  // function that displays images/content for each button
   function displayImages () {
+    // resets the sports-view container
+    $("#sports-view").empty();
     //images appear when button is clicked
-    // bind click event on the cat button
+    // bind click event on the sports buttons
     $("button").on("click", function() {
+      // creating a variable that will make the buttons act as giphy tags
       var tag = $(this).attr("data-name");
-      // assign the api url we wish to query to a variable
-      var queryURL = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" + tag;
+      console.log(tag);
+      // assign the api url we wish to query to a variable and limit results to 10
+      var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+                  tag + "&api_key=dc6zaTOxFJmzC&limit=10";
 
       // request data from api using AJAX
       $.ajax({
@@ -60,21 +51,28 @@ $(document).ready(function(){
 
       // process ajax call response
       .done(function(response) {
+        console.log(response);
 
-        // store original image url from the ajax response in a variable
-        var imageUrl = response.data.image_original_url;
+        var results = response.data;
 
-        // create a new <img> element 
-        var tagImage = $("<img>");
-
-        // set the source of our new image
-        // to the value of the image received in our ajax call.
-        // and give it an alt name
-        tagImage.attr("src", imageUrl);
-        tagImage.attr("alt", "tag image");
-
-        // select the #images element and add the new catImage to the top of the element
-        $("#sports-view").html(tagImage);
+        for (var i = 0; i < results.length; i++) {
+          // Make a div with jQuery and store it in a variable named sportDiv.
+          var sportDiv = $("<div>");
+          // Make a paragraph tag with jQuery and store it in a variable named p.
+          var p = $("<p>");
+          // Set the inner text of the paragraph to the rating of the image in results[i].
+          p.text("Rating: " + results[i].rating);
+          // Make an image tag with jQuery and store it in a variable named sportImage.
+          var sportImage = $("<img>");
+          // Set the image's src to results[i]'s fixed_height.url.
+          sportImage.attr("src", results[i].images.fixed_height.url);
+          // Append the p variable to the sportDiv variable.
+          sportDiv.append(p);
+          // Append the sportImage variable to the animalDiv variable.
+          sportDiv.append(sportImage);
+          // Prepend the sportDiv variable to the element with an id of gifs-appear-here.
+          $("#sports-view").prepend(sportDiv);
+        }
       });
     });
   };
@@ -82,21 +80,29 @@ $(document).ready(function(){
   displayImages();
 
 
+  // What happens when a sports button is clicked
+  $("#addSport").on("click", function(event) {
+    event.preventDefault();
+    // Grabbing the input from the textbox
+    var tag = $("#sport-input").val().trim();
+    // Adding the sports input to the original sports array
+    sports.push(tag);
+    //emptying the sportButtons div so all the buttons aren't displayed again
+    $("#sportButtons").empty();
+    // Calling renderButtons which handles the processing of our sports array
+    buildButtons();
+    });
 
-      // This function handles events where a movie button is clicked
-      $("#addSport").on("click", function(event) {
-        event.preventDefault();
-        // This line grabs the input from the textbox
-        var tag = $("#sport-input").val().trim();
+  // // when submit button is clicked, the userInput function is executed 
+  // // and the user's input is added to the array
+  // $("#addSport").on("click", function() {
+  //   userInput();
+  // })
 
-        // Adding movie from the textbox to our array
-        sports.push(tag);
+        // Adding a click event listener to all elements with a class of "sport"
+      $(document).on("click", ".sport", displayImages);
 
-        // Calling renderButtons which handles the processing of our movie array
-        renderButtons();
-      });
-
-
-
+      // Calling the renderButtons function to display the intial buttons
+      buildButtons();
 
 });
