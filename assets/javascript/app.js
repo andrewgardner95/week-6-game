@@ -75,9 +75,26 @@ $(document).ready(function(){
         }
       });
     });
+
+      // click event to stop and animate the images
+      $("img").on("click", function() {
+      var state = $(this).attr("data-state");
+      console.log(state);
+
+
+      // if (state === "still") {
+      //   $(this).attr("src", $(this).attr("data-animate"));
+      //   $(this).attr("data-state", "animate");
+      // } else {
+      //   $(this).attr("src", $(this).attr("data-still"));
+      //   $(this).attr("data-state", "still");
+      // }
+
+    });
   };
 
   displayImages();
+
 
 
   // What happens when a sports button is clicked
@@ -89,20 +106,15 @@ $(document).ready(function(){
     sports.push(tag);
     //emptying the sportButtons div so all the buttons aren't displayed again
     $("#sportButtons").empty();
-    // Calling renderButtons which handles the processing of our sports array
+    // Calling buildButtons which handles the processing of our sports array
     buildButtons();
     });
 
-  // // when submit button is clicked, the userInput function is executed 
-  // // and the user's input is added to the array
-  // $("#addSport").on("click", function() {
-  //   userInput();
-  // })
 
         // Adding a click event listener to all elements with a class of "sport"
       $(document).on("click", ".sport", displayImages);
 
-      // Calling the renderButtons function to display the intial buttons
+      // Calling the buildButtons function to display the intial buttons
       buildButtons();
 
 });
